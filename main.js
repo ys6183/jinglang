@@ -121,6 +121,66 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Video carousel logic
+    const videoSlides = document.querySelectorAll('.video-slide');
+    const videoDots = document.querySelectorAll('.video-dot');
+    const prevVideoBtn = document.getElementById('prev-video');
+    const nextVideoBtn = document.getElementById('next-video');
+
+    let currentVideoIndex = 0;
+
+   function showVideo(index) {
+        if (!videoSlides.length) return;
+
+        const total = videoSlides.length;
+        const prevIndex = (index - 1 + total) % total;
+        const nextIndex = (index + 1) % total;
+
+        videoSlides.forEach((slide, i) => {
+            slide.classList.remove('active', 'prev', 'next');
+
+            if (i === index) {
+                slide.classList.add('active');
+            } else if (i === prevIndex) {
+                slide.classList.add('prev');
+            } else if (i === nextIndex) {
+                slide.classList.add('next');
+            }
+
+            const video = slide.querySelector('video');
+            if (video && i !== index) {
+                video.pause();
+            }
+        });
+
+        videoDots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+
+        currentVideoIndex = index;
+    }
+
+    if (nextVideoBtn && prevVideoBtn) {
+        nextVideoBtn.addEventListener('click', () => {
+            const nextIndex = (currentVideoIndex + 1) % videoSlides.length;
+            showVideo(nextIndex);
+        });
+
+        prevVideoBtn.addEventListener('click', () => {
+            const prevIndex = (currentVideoIndex - 1 + videoSlides.length) % videoSlides.length;
+            showVideo(prevIndex);
+        });
+    }
+
+    videoDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = Number(dot.dataset.index);
+            showVideo(index);
+        });
+    });
+
+    showVideo(0);
+
     // 5. Update footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 });
